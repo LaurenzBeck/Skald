@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="docs/images/fantasy_fjord_art.jpg" alt="Banner credits to deepdreamgenerator.com"/></a>
+    <img src="https://github.com/LaurenzBeck/Skald/blob/main/docs/images/fantasy_fjord_art.jpg?raw=true" alt="Banner credits to deepdreamgenerator.com"/></a>
 </p>
 
 <h1 align="center">
