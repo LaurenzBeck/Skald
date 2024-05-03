@@ -3,7 +3,7 @@
 </p>
 
 <h1 style="text-align: center;">
-    <img src="docs/images/musical-notes.png" style="display:inline; height:1em">
+    <img src="docs/images/musical-notes.png" style="display:inline; height:20%">
     Skáld
 </h1>
 
