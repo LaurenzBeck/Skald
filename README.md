@@ -2,7 +2,7 @@
     <img src="docs/images/fantasy_fjord_art.jpg" alt="Banner credits to deepdreamgenerator.com"/></a>
 </p>
 
-<h1 style="text-align: center;">
+<h1 align="center">
     Skáld
 </h1>
 
