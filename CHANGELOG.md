@@ -8,6 +8,18 @@ This project uses [*towncrier*](https://towncrier.readthedocs.io/) and the chang
 
 <!-- towncrier release notes start -->
 
+## [0.2.0](https://github.com/laurenzbeck/skald/tree/0.2.0) - 2024-06-03
+
+
+### ➕ Added
+
+- 📈⚙️ implemented metrics and parameter logging ([#6](https://github.com/laurenzbeck/skald/issues/6))
+
+### 📦 Misc
+
+- 📮 designed API and documented it (partly) in README and docstrings ([#5](https://github.com/laurenzbeck/skald/issues/5))
+
+
 ## [0.1.0](https://github.com/laurenzbeck/skald/tree/0.1.0) - 2024-05-03
 
 

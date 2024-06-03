@@ -73,7 +73,7 @@ showcontent = true
 [[tool.towncrier.type]]
 directory = "misc"
 name = "📦 Misc"
-showcontent = false
+showcontent = true
 
 [build-system]
 requires = ["poetry-core"]
