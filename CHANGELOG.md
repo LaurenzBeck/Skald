@@ -8,6 +8,18 @@ This project uses [*towncrier*](https://towncrier.readthedocs.io/) and the chang
 
 <!-- towncrier release notes start -->
 
+## [0.3.0](https://github.com/laurenzbeck/skald/tree/0.3.0) - 2024-06-07
+
+
+### ➕ Added
+
+- 🧑‍💻 added skald TUI prototype. ([#8](https://github.com/laurenzbeck/skald/issues/8))
+
+### 🐛 Fixed
+
+- ⏱️ fixed time stamp format when `run_name` is not defined. ([#8](https://github.com/laurenzbeck/skald/issues/8))
+
+
 ## [0.2.0](https://github.com/laurenzbeck/skald/tree/0.2.0) - 2024-06-03
 
 
