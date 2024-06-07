@@ -19,10 +19,36 @@ from skald.enums import (
     MetricsFileFormatLit,
 )
 from skald.utils import flatten_dict
+from skald import tui
 
 
 @beartype
 class Logger:
+    """📃 an experiment logger for storing console logs, metrics, parameters and artifacts.
+
+    This class integrates an optional [textualize](https://textual.textualize.io/) TUI app for viewing the logs.
+
+    ???+ info
+
+        Skáld also provides a CLI tool (`skald`) to view logs later.
+        simply call `$skald <path_to_log_dir>` or `$skald --help` for help.
+
+    Attributes:
+        dir (Path): directory, where the log "run" directory will be created.
+        run_name (str): name of the experiment/run. Can be defined by the user.
+            If not defined, the current timestamp will be used.
+        run_dir (Path): path to the run directory. Will be `dir/{run_name}`.
+        timestamp (datetime): timestamp of the creation of the logger instance.
+        metrics_file (Path): path to the metrics file.
+        metrics_file_format (MetricsFileFormat): file format of the metrics.
+            Currently, csv and parquet are supported. Defaults to "parquet".
+        params_file (Path): path to the parameters file.
+        artifacts_dir (Path): path to the artifacts directory.
+        persistence_strategy (PersistenceStrategy): when to save the metrics to disk.
+            Used for performance optimizations. Defaults to "eager".
+        tui (bool): Whether to start the experiment viewer terminal user interface.
+    """
+
     # 🔎 Logger and Run Details
     dir: Path
     run_name: str
@@ -33,6 +59,7 @@ class Logger:
     params_file: Path
     artifacts_dir: Path
     persistence_strategy: PersistenceStrategy
+    tui: bool
 
     # 🔢 Internals
     _metrics: DataFrame
@@ -42,14 +69,31 @@ class Logger:
         self,
         dir: Path = Path("."),
         run_name: str | None = None,
-        metrics_file: Path = Path("metrics"),
-        params_file: Path = Path("params.yaml"),
-        artifacts_dir: Path = Path("artifacts"),
         persistence_strategy: PersistenceStrategy | PersistenceStrategyLit = "eager",
         metrics_file_format: MetricsFileFormat | MetricsFileFormatLit = "parquet",
-    ) -> None:
+        tui: bool = False,
+    ):
+        """🏃‍♂️ creates a logger instance and prepares a Skáld run.
+
+        Each run will have the following structure:
+
+        - `dir/{run_name}/`
+            - `metrics.{metrics_file_format}`
+            - `params.yaml`
+            - `artifacts/`
+
+        Args:
+            dir (Path, optional): path to the directory under which the run directory will be created. Defaults to Path(".").
+            run_name (str | None, optional): name of the run. If None, use the current time as `run_name`. Defaults to None.
+            persistence_strategy (PersistenceStrategy | PersistenceStrategyLit, optional): when to save the metrics to disk.
+                Used for performance optimizations. Defaults to "eager".
+            metrics_file_format (MetricsFileFormat | MetricsFileFormatLit, optional): file format of the metrics. Defaults to "parquet".
+            tui (bool, optional): Whether to start the experiment viewer terminal user interface. Defaults to false.
+        """
         self.timestamp = datetime.now()
-        self.run_name = run_name if run_name else str(self.timestamp)
+        self.run_name = (
+            run_name if run_name else self.timestamp.strftime("%Y%m%d-%H%M%S")
+        )
         self.run_dir = dir / self.run_name
 
         self.run_dir.mkdir()
@@ -64,18 +108,20 @@ class Logger:
             "skald.run_name": self.run_name,
             "skald.version": "v1",
         }
-        self.params_file = self.run_dir / params_file
+        self.params_file = self.run_dir / Path("params.yaml")
         self._save_params()
 
         self._metrics = DataFrame()
-        self.metrics_file = self.run_dir / metrics_file.with_suffix(
+        self.metrics_file = self.run_dir / Path("metrics").with_suffix(
             f".{metrics_file_format}"
         )
         self.metrics_file_format = metrics_file_format
         self._save_metrics()
 
-        self.artifacts_dir = self.run_dir / artifacts_dir
+        self.artifacts_dir = self.run_dir / Path("artifacts")
         self.artifacts_dir.mkdir()
+
+        self.tui = tui
 
     def log(self):
         raise NotImplementedError
@@ -283,3 +329,7 @@ class Logger:
         The parameters and metrics will be saved.
         """
         self.save()
+        # * because the tui is not yet fully featured (metrics are not updating),
+        # * we only start the tui after the log has finished to inspect the logs.
+        if self.tui:
+            tui.view_experiment(self.run_dir)
