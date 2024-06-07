@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "skald"
-version = "0.3.0"
+version = "0.4.0"
 description = "📟 a simple and efficient experiment logger for Python 🐍"
 keywords = ["logging", "tui"]
 authors = ["Laurenz Farthofer <laurenz@hey.com>"]

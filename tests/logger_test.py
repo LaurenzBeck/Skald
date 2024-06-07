@@ -19,6 +19,7 @@ def test_init_logger(tmp_path: Path):
     assert logger.run_name == "test"
 
     assert (tmp_path / "test").is_dir()
+    assert (tmp_path / "test" / "console.log").is_file()
     assert (tmp_path / "test" / "params.yaml").is_file()
     assert (tmp_path / "test" / "metrics.parquet").is_file()
     assert (tmp_path / "test" / "artifacts").is_dir()
@@ -30,13 +31,6 @@ def test_metric_logging_exceptions(tmp_path: Path):
 
     with pytest.raises(beartype.roar.BeartypeCallHintParamViolation):
         logger.log_metric(1, 42)
-
-    # with pytest.raises(skald.MissingIDsError):
-    #     logger.log_metric("metric", 42)
-
-    # logger.log_metric("metric", 42, step=1)
-    # with pytest.raises(skald.DuplicateIDsError):
-    #     logger.log_metric("metric", 42, step=1)
 
 
 @pytest.mark.parametrize("metrics_file_format", ["csv", "parquet"])

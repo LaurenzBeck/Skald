@@ -10,10 +10,8 @@
 📟 a simple and efficient experiment logger for Python 🐍
 </p>
 
-> “Ósnotr maðr þykkist allt vita.” - An unwise man thinks he knows all.
-
 <p align="center">
-    <img alt="Static Badge" src="https://img.shields.io/badge/📦_version-0.3.0-blue">
+    <img alt="Static Badge" src="https://img.shields.io/badge/📦_version-0.4.0-blue">
     <a href="https://www.repostatus.org/#wip"><img src="https://www.repostatus.org/badges/latest/wip.svg" alt="Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public." /></a>
 </p>
 
@@ -73,11 +71,15 @@ While a stateful version of Skáld is planned, that updates an id/step variables
 
 ### 📂 Logging Structure
 
-Logs of metrics will be represented by tidy dataframes that are stored as readable *.csv* or more space efficient *.parquet* files.
+Logs of metrics will be represented by tidy dataframes that are stored as readable `metrics.csv` or more space efficient `metrics.parquet` files.
 
 To save space, parameters will not be included in these dataframes, but in a separate file (`params.yaml`) by default.
 
 Artifacts will be stored in a separate sub-directory (`artifacts/` by default).
+
+Skáld has its own [loguru](https://loguru.readthedocs.io/en/stable/index.html) logger instance and exposes the logging functions.
+The logs will stored in a `console.log` file.
+If you use the logger as a context manager, *stdout* (~ `print` statements) will also be saved in `console.log`.
 
 ## 📦 Installation
 
@@ -96,6 +98,7 @@ poetry install --sync --compile
 ## 🚀 Usage
 
 The API of Skáld is very similar to DVCLive and other loggers.
+It also exposes [loguru's](https://loguru.readthedocs.io/en/stable/index.html) logging api, so you can also use a Skáld logger as your terminal logger.
 
 A basic example:
 
@@ -111,6 +114,15 @@ with Logger("test-run-1") as logger:
     # experiment logic
     metric: float = evaluate(model)
     logger.log_metric("accuracy", metric)
+    logger.success("finished experiment!")
+```
+
+To launch the experiment viewer TUI after the run is completed, use `tui=True` in the constructor of the `Logger`.
+
+You can also launch the experiment viewer manually to inspect your logs:
+
+```sh
+$skald <experiment_run_dir>
 ```
 
 ---

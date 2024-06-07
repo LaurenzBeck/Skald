@@ -9,8 +9,11 @@ import yaml
 from pathlib import Path
 from beartype import beartype
 from loguru import logger
+from loguru._logger import Logger as LoguruLogger
 import polars as pl
 from polars import DataFrame
+import sys
+import contextlib
 
 from skald.enums import (
     PersistenceStrategy,
@@ -62,6 +65,7 @@ class Logger:
     tui: bool
 
     # 🔢 Internals
+    _logger: LoguruLogger
     _metrics: DataFrame
     _params: dict[str, Any]
 
@@ -78,6 +82,7 @@ class Logger:
         Each run will have the following structure:
 
         - `dir/{run_name}/`
+            - `console.log`
             - `metrics.{metrics_file_format}`
             - `params.yaml`
             - `artifacts/`
@@ -98,7 +103,29 @@ class Logger:
 
         self.run_dir.mkdir()
 
-        logger.info(f"📂 logging to {self.run_dir}")
+        # 📃 console logging with loguru
+        # * we also redirect stdout to the log file, which requires a trick from:
+        # * https://loguru.readthedocs.io/en/stable/resources/recipes.html#capturing-standard-stdout-stderr-and-warnings
+        self._logger = logger
+
+        class _StreamToLogger:
+            def __init__(self, _logger):
+                self._logger = _logger
+
+            def write(self, buffer):
+                self._logger.opt(depth=1, raw=True).info(buffer)
+
+            def flush(self):
+                pass
+
+        self._logger.remove()
+        self._logger.add(sys.__stdout__)
+        self._logger.add(f"{self.run_dir/'console.log'}")
+        self._redirect_stdout = contextlib.redirect_stdout(
+            _StreamToLogger(self._logger)
+        )
+
+        self.info(f"📂 logging to {self.run_dir}")
 
         self.persistence_strategy = persistence_strategy
 
@@ -299,7 +326,7 @@ class Logger:
         """💾 saves metrics and parameters to disk."""
         match self.persistence_strategy:
             case PersistenceStrategy.EAGER:
-                logger.info(
+                self.info(
                     "There is no need to call `save` when using `PersistenceStrategy.EAGER`."
                 )
 
@@ -321,15 +348,43 @@ class Logger:
 
     def __enter__(self) -> Self:
         """📲 called when entering a context manager."""
+        self._redirect_stdout.__enter__()
         return self
 
-    def __exit__(self, exc_type_, exc_value_, traceback_) -> None:
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
         """🚪 called when leaving a context manager.
 
         The parameters and metrics will be saved.
         """
         self.save()
+        self._redirect_stdout.__exit__(exc_type, exc_value, traceback)
         # * because the tui is not yet fully featured (metrics are not updating),
         # * we only start the tui after the log has finished to inspect the logs.
         if self.tui:
             tui.view_experiment(self.run_dir)
+
+    # 📃 Console Logging
+
+    def debug(self, message: str, *args, **kwargs) -> None:
+        """🔎 logs a debug message using [loguru](https://loguru.readthedocs.io/en/stable/)."""
+        self._logger.debug(message, *args, **kwargs)
+
+    def info(self, message: str, *args, **kwargs) -> None:
+        """ℹ️ logs an info message using [loguru](https://loguru.readthedocs.io/en/stable/)."""
+        self._logger.info(message, *args, **kwargs)
+
+    def warning(self, message: str, *args, **kwargs) -> None:
+        """❗ logs a warning message using [loguru](https://loguru.readthedocs.io/en/stable/)."""
+        self._logger.warning(message, *args, **kwargs)
+
+    def error(self, message: str, *args, **kwargs) -> None:
+        """🔥 logs n error message using [loguru](https://loguru.readthedocs.io/en/stable/)."""
+        self._logger.error(message, *args, **kwargs)
+
+    def critical(self, message: str, *args, **kwargs) -> None:
+        """🤯 logs a critical message using [loguru](https://loguru.readthedocs.io/en/stable/)."""
+        self._logger.critical(message, *args, **kwargs)
+
+    def success(self, message: str, *args, **kwargs) -> None:
+        """✅ logs a success message using [loguru](https://loguru.readthedocs.io/en/stable/)."""
+        self._logger.success(message, *args, **kwargs)
