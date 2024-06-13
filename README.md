@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://github.com/LaurenzBeck/Skald/blob/main/docs/images/fantasy_fjord_art.jpg?raw=true" alt="Banner credits to deepdreamgenerator.com"/></a>
+    <img src="https://github.com/LaurenzBeck/Skald/blob/main/docs/images/fantasy_fjord_art.jpg?raw=true"/></a>
 </p>
 
 <h1 align="center">
@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-    <img alt="Static Badge" src="https://img.shields.io/badge/📦_version-0.4.0-blue">
+    <img alt="Static Badge" src="https://img.shields.io/badge/📦_version-0.4.1-blue">
     <a href="https://www.repostatus.org/#wip"><img src="https://www.repostatus.org/badges/latest/wip.svg" alt="Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public." /></a>
 </p>
 
@@ -124,6 +124,12 @@ You can also launch the experiment viewer manually to inspect your logs:
 ```sh
 $skald <experiment_run_dir>
 ```
+
+---
+
+## 🖼️ ©️ Banner Artwork Attribution
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png" /></a><br />The art in the banner of this README is licensed under a [Creative Commons Attribution-NonCommercial-No Derivatives Works 3.0 License](https://creativecommons.org/licenses/by-nc-nd/3.0/). It was made by [th3dutchzombi3](https://www.deviantart.com/th3dutchzombi3). Check out his beautiful artwork ❤️
 
 ---
 
