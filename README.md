@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-    <img alt="Static Badge" src="https://img.shields.io/badge/📦_version-0.4.1-blue">
+    <a href="https://pypi.org/project/skald/"><img alt="Static Badge" src="https://img.shields.io/badge/📦_version-0.5.0-blue"></a>
     <a href="https://www.repostatus.org/#wip"><img src="https://www.repostatus.org/badges/latest/wip.svg" alt="Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public." /></a>
 </p>
 

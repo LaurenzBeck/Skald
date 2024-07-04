@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "skald"
-version = "0.4.1"
+version = "0.5.0"
 description = "📟 a simple and efficient experiment logger for Python 🐍"
 keywords = ["logging", "tui"]
 authors = ["Laurenz Farthofer <laurenz@hey.com>"]
@@ -28,6 +28,7 @@ textual = "^0.63.6"
 textual-dev = "^1.5.1"
 textual-plotext = "^0.2.1"
 aiofile = "^3.8.8"
+matplotlib = "^3.9.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.4.2"
@@ -82,6 +83,48 @@ showcontent = true
 directory = "misc"
 name = "📦 Misc"
 showcontent = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = ["ALL"]  # Refer to https://docs.astral.sh/ruff/rules/ and click on the specific rule to understand why it is important
+ignore = [
+    "A002",
+    "ANN003",
+    "ANN101",
+    "ANN401",
+    "TCH002", # beartype needs types at runtime
+    "PYI041", # also needed because beartype is stricter here
+    "RUF002",
+]
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.pyupgrade]
+# Preserve types, even if a file imports `from __future__ import annotations`.
+keep-runtime-typing = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 20
+
+[tool.mypy]
+check_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.docformatter]
+recursive = true
+wrap-summaries = 0
+wrap-descriptions = 0
 
 [build-system]
 requires = ["poetry-core"]

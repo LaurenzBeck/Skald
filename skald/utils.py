@@ -4,13 +4,13 @@ import pandas as pd
 
 
 def flatten_dict(d: dict, sep: str = ".") -> dict:
-    """📖 flattens a nested dictionary with only keys of type `str` into a single-level dictionary by concatenating keys with <sep>.
+    """📖 flattens a nested dictionary by concatenating keys with <sep>.
 
     Code from https://www.freecodecamp.org/news/how-to-flatten-a-dictionary-in-python-in-4-different-ways/
 
     Args:
         d (dict): dictionary
-        sep (str, optional): keys are concatenated using this separator. Defaults to '.'.
+        sep (str, optional): keys are concatenated using this separator. Defaults to '.'
 
     Returns:
         dict: flattened dictionary

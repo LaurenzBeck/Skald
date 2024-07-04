@@ -1,8 +1,11 @@
 """⚗️📄 Global fixtures for all tests.
 
-Since they are in a `conftest.py` file, they are available without explicit imports in all tests.
+Since they are in a `conftest.py` file,
+they are available without explicit imports in all tests.
 """
+
 # ruff: noqa: S101, D103, ANN001, ANN201
+from __future__ import annotations
 
 import pytest
 

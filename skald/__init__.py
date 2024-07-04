@@ -1,35 +1,41 @@
-"""# Skáld
+"""# Skáld.
 
 📟 a simple and efficient experiment logger for Python 🐍
 """
 
+from __future__ import annotations
+
+import contextlib
+import sys
 from datetime import datetime
-from typing import Any, Self
-import yaml
 from pathlib import Path
+from typing import Any, Self
+
+import matplotlib.pyplot as plt
+import polars as pl
+import yaml
 from beartype import beartype
 from loguru import logger
 from loguru._logger import Logger as LoguruLogger
-import polars as pl
+from matplotlib.figure import Figure
 from polars import DataFrame
-import sys
-import contextlib
 
+from skald import tui
 from skald.enums import (
-    PersistenceStrategy,
-    PersistenceStrategyLit,
     MetricsFileFormat,
     MetricsFileFormatLit,
+    PersistenceStrategy,
+    PersistenceStrategyLit,
 )
 from skald.utils import flatten_dict
-from skald import tui
 
 
 @beartype
 class Logger:
-    """📃 an experiment logger for storing console logs, metrics, parameters and artifacts.
+    """📃 a logger for storing console logs, metrics, parameters and artifacts.
 
-    This class integrates an optional [textualize](https://textual.textualize.io/) TUI app for viewing the logs.
+    This class integrates an optional [textualize](https://textual.textualize.io/)
+    TUI app for viewing the logs.
 
     ???+ info
 
@@ -69,14 +75,14 @@ class Logger:
     _metrics: DataFrame
     _params: dict[str, Any]
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
-        dir: Path = Path("."),
+        dir: Path = Path(),
         run_name: str | None = None,
         persistence_strategy: PersistenceStrategy | PersistenceStrategyLit = "eager",
         metrics_file_format: MetricsFileFormat | MetricsFileFormatLit = "parquet",
-        tui: bool = False,
-    ):
+        tui: bool = False,  # noqa: FBT001, FBT002
+    ) -> None:
         """🏃‍♂️ creates a logger instance and prepares a Skáld run.
 
         Each run will have the following structure:
@@ -88,14 +94,19 @@ class Logger:
             - `artifacts/`
 
         Args:
-            dir (Path, optional): path to the directory under which the run directory will be created. Defaults to Path(".").
-            run_name (str | None, optional): name of the run. If None, use the current time as `run_name`. Defaults to None.
-            persistence_strategy (PersistenceStrategy | PersistenceStrategyLit, optional): when to save the metrics to disk.
+            dir (Path, optional): path to the directory under which the run directory
+                will be created. Defaults to Path(".").
+            run_name (str | None, optional): name of the run. If None, use the current
+                time as `run_name`. Defaults to None.
+            persistence_strategy (PersistenceStrategy | PersistenceStrategyLit, optional):
+                when to save the metrics to disk.
                 Used for performance optimizations. Defaults to "eager".
-            metrics_file_format (MetricsFileFormat | MetricsFileFormatLit, optional): file format of the metrics. Defaults to "parquet".
-            tui (bool, optional): Whether to start the experiment viewer terminal user interface. Defaults to false.
-        """
-        self.timestamp = datetime.now()
+            metrics_file_format (MetricsFileFormat | MetricsFileFormatLit, optional):
+                file format of the metrics. Defaults to "parquet".
+            tui (bool, optional): Whether to start the experiment viewer terminal user interface.
+                Defaults to false.
+        """  # noqa: E501
+        self.timestamp = datetime.now()  # noqa: DTZ005
         self.run_name = (
             run_name if run_name else self.timestamp.strftime("%Y%m%d-%H%M%S")
         )
@@ -109,20 +120,20 @@ class Logger:
         self._logger = logger
 
         class _StreamToLogger:
-            def __init__(self, _logger):
+            def __init__(self, _logger) -> None:  # noqa: ANN001
                 self._logger = _logger
 
-            def write(self, buffer):
+            def write(self, buffer) -> None:  # noqa: ANN001
                 self._logger.opt(depth=1, raw=True).info(buffer)
 
-            def flush(self):
+            def flush(self) -> None:
                 pass
 
         self._logger.remove()
         self._logger.add(sys.__stdout__)
         self._logger.add(f"{self.run_dir/'console.log'}")
         self._redirect_stdout = contextlib.redirect_stdout(
-            _StreamToLogger(self._logger)
+            _StreamToLogger(self._logger),
         )
 
         self.info(f"📂 logging to {self.run_dir}")
@@ -140,7 +151,7 @@ class Logger:
 
         self._metrics = DataFrame()
         self.metrics_file = self.run_dir / Path("metrics").with_suffix(
-            f".{metrics_file_format}"
+            f".{metrics_file_format}",
         )
         self.metrics_file_format = metrics_file_format
         self._save_metrics()
@@ -150,8 +161,34 @@ class Logger:
 
         self.tui = tui
 
-    def log(self):
-        raise NotImplementedError
+    def log(
+        self,
+        arg: str | dict,
+        value: int | float | Figure | None = None,
+        **kwargs: dict[str, Any],
+    ) -> None:
+        """✨ dispatches to specific logging methods based on the type of arguments.
+
+        + `log(str, int | float, **ids)` -> `log_metric`
+        + `log(dict, **ids)` -> `log_metrics`
+        + `log(dict)` -> `log_params`
+        + `log(str, Figure)` -> `log_figure`
+        + `log(str)` -> `info`
+        """
+        match (arg, value, kwargs):
+            case (str(), int() | float(), _):
+                self.log_metric(arg, value, **kwargs)
+            # * (..., dict() as ids) if ids is executed when there are keyword arguments
+            case (dict(), None, dict() as ids) if ids:
+                self.log_metrics(arg, **ids)
+            case (dict(), None, dict()):
+                self.log_params(arg)
+            case (str(), Figure(), _):
+                self.log_figure(arg, value, **kwargs)
+            case (str(), None, _):
+                self.info(arg)
+            case (_, _, _):
+                logger.warning("🤔 unsupported combination of arguments and types.")
 
     def get_metrics_with_params(self) -> DataFrame:
         """🐻‍❄️ returns the metrics with params in additional columns.
@@ -160,7 +197,7 @@ class Logger:
             DataFrame: tidy metrics + params
         """
         return self._metrics.with_columns(
-            [pl.lit(param).alias(name) for param, name in self._params.items()]
+            [pl.lit(param).alias(name) for param, name in self._params.items()],
         )
 
     # 📈 Metrics
@@ -168,7 +205,7 @@ class Logger:
     def log_metric(self, name: str, value: int | float, **ids: dict) -> None:
         """📈 logs a metric with identifiers given as keyword arguments.
 
-        If `self.persistence_strategy` is `"eager"`, the metric will be saved to disk.
+        If `self.persistence_strategy` is `eager`, the metric will be saved to disk.
 
         Args:
             name (str): name of the metric
@@ -188,7 +225,7 @@ class Logger:
     def log_scalar(self, name: str, value: int | float, **ids: dict) -> None:
         """📈 logs a scalar (metric) with identifiers given as keyword arguments.
 
-        If `self.persistence_strategy` is `"eager"`, the metric will be saved to disk.
+        If `self.persistence_strategy` is `eager`, the metric will be saved to disk.
 
         Args:
             name (str): name of the metric
@@ -200,12 +237,12 @@ class Logger:
     def log_metrics(self, metrics: dict[str, int | float], **ids) -> None:
         """📈 logs a dictionary of metrics with identifiers given as keyword arguments.
 
-        If `self.persistence_strategy` is `"eager"`, the metrics will be saved to disk.
+        If `self.persistence_strategy` is `eager`, the metrics will be saved to disk.
 
         Examples:
             An example of how to log two metrics stored in a dictionary.
 
-            >>> logger.log_metrics({"loss": 1.23, "accuracy": 0.9}, stage="test", step=1)
+            >>> logger.log_metrics({"loss": 1.23, "acc": 0.9}, stage="test", step=1)
 
 
         Args:
@@ -216,14 +253,14 @@ class Logger:
             self.log_scalar(name, value, **ids)
 
     def log_scalars(self, metrics: dict[str, int | float], **ids) -> None:
-        """📈 logs a dictionary of scalars (metrics) with identifiers given as keyword arguments.
+        """📈 logs a dictionary of scalars with identifiers given as keyword arguments.
 
-        If `self.persistence_strategy` is `"eager"`, the metrics will be saved to disk.
+        If `self.persistence_strategy` is `eager`, the metrics will be saved to disk.
 
         Examples:
             An example of how to log two metrics stored in a dictionary.
 
-            >>> logger.log_metrics({"loss": 1.23, "accuracy": 0.9}, stage="test", step=1)
+            >>> logger.log_metrics({"loss": 1.23, "acc": 0.9}, stage="test", step=1)
 
 
         Args:
@@ -236,12 +273,12 @@ class Logger:
     def log_dict(self, metrics: dict[str, int | float], **ids) -> None:
         """📈 logs a dictionary of metrics with identifiers given as keyword arguments.
 
-        If `self.persistence_strategy` is `"eager"`, the metrics will be saved to disk.
+        If `self.persistence_strategy` is `eager`, the metrics will be saved to disk.
 
         Examples:
             An example of how to log two metrics stored in a dictionary.
 
-            >>> logger.log_metrics({"loss": 1.23, "accuracy": 0.9}, stage="test", step=1)
+            >>> logger.log_metrics({"loss": 1.23, "acc": 0.9}, stage="test", step=1)
 
 
         Args:
@@ -258,12 +295,12 @@ class Logger:
 
         If the parameter exists, it will be overwritten.
 
-        If `self.persistence_strategy` is `"eager"`, the parameter will be saved to disk.
+        If `self.persistence_strategy` is `eager`, the parameter will be saved to disk.
 
         Args:
             name (str): name of the parameter.
             value (Any): value of the parameter.
-                parameters are stored as yaml files, so any yaml-compatible value is allowed.
+                parameters are stored as yaml files, so any compatible value is allowed.
         """
         self._params[name] = value
 
@@ -274,25 +311,27 @@ class Logger:
     def log_arg(self, name: str, value: Any) -> None:
         """⚙️ logs a single argument (parameter).
 
-        If `self.persistence_strategy` is `"eager"`, the parameter will be saved to disk.
+        If `self.persistence_strategy` is `eager`, the parameter will be saved to disk.
 
         Args:
             name (str): name of the parameter.
             value (Any): value of the parameter.
-                parameters are stored as yaml files, so any yaml-compatible value is allowed.
+                parameters are stored as yaml files, so any compatible value is allowed.
         """
         self.log_param(name, value)
 
     def log_params(self, params: dict, separator: str = ".") -> None:
         """⚙️ logs a dictionary of parameters.
 
-        To facilitate the consumption and visualization, the parameters dictionary will be flattened.
+        To facilitate the consumption and visualization,
+        the parameters dictionary will be flattened using `skald.utils.flatten_dict`.
 
-        If `self.persistence_strategy` is `"eager"`, the parameters will be saved to disk.
+        If `self.persistence_strategy` is `eager`, the parameters will be saved to disk.
 
         Args:
             params (dict): (possibly nested) dictionary of parameters.
-            separator (str, optional): keys are concatenated using this separator. Defaults to '.'.
+            separator (str, optional): keys are concatenated using this separator.
+                Defaults to '.'.
         """
         params = flatten_dict(params, sep=separator)
 
@@ -302,23 +341,36 @@ class Logger:
     def log_args(self, params: dict, separator: str = ".") -> None:
         """⚙️ logs a dictionary of arguments (parameters).
 
-        To facilitate the consumption and visualization, the parameters dictionary will be flattened.
+        To facilitate the consumption and visualization,
+        the parameters dictionary will be flattened using `skald.utils.flatten_dict`.
 
-        If `self.persistence_strategy` is `"eager"`, the parameters will be saved to disk.
+        If `self.persistence_strategy` is `eager`, the parameters will be saved to disk.
 
         Args:
             params (dict): (possibly nested) dictionary of parameters.
-            separator (str, optional): keys are concatenated using this separator. Defaults to '.'.
+            separator (str, optional): keys are concatenated using this separator.
+                Defaults to '.'.
         """
         self.log_params(params, separator)
 
     # 🖼️ Artifacts
 
-    def log_figure(self):
-        raise NotImplementedError
+    def log_figure(self, name: str, fig: Figure | None = None, **kwargs) -> None:
+        """🖼️ saves a matplotlib `Figure` as an artifact.
 
-    def log_image(self):
-        raise NotImplementedError
+        Args:
+            name (str): file name of the figure.
+            fig (Figure | None, optional): matplotlib figure to save.
+                If None, save the current figure using `matplotlib.pyplot.gcf`.
+                Defaults to None.
+            **kwargs: keyword arguments are passed to `matplotlib.figure.Figure.savefig`.
+        """  # noqa: E501
+        if fig is None:
+            fig = plt.gcf()
+
+        file_path = self.artifacts_dir / name
+
+        fig.savefig(file_path, **kwargs)
 
     # 💾 Saving to Disk
 
@@ -327,7 +379,7 @@ class Logger:
         match self.persistence_strategy:
             case PersistenceStrategy.EAGER:
                 self.info(
-                    "There is no need to call `save` when using `PersistenceStrategy.EAGER`."
+                    "There is no need to call `save` when using `PersistenceStrategy.EAGER`.",  # noqa: E501
                 )
 
         self._save_metrics()
@@ -351,7 +403,7 @@ class Logger:
         self._redirect_stdout.__enter__()
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
+    def __exit__(self, exc_type, exc_value, traceback) -> None:  # noqa: ANN001
         """🚪 called when leaving a context manager.
 
         The parameters and metrics will be saved.
@@ -365,26 +417,26 @@ class Logger:
 
     # 📃 Console Logging
 
-    def debug(self, message: str, *args, **kwargs) -> None:
+    def debug(self, message: str, *args, **kwargs) -> None:  # noqa: ANN002
         """🔎 logs a debug message using [loguru](https://loguru.readthedocs.io/en/stable/)."""
         self._logger.debug(message, *args, **kwargs)
 
-    def info(self, message: str, *args, **kwargs) -> None:
+    def info(self, message: str, *args, **kwargs) -> None:  # noqa: ANN002
         """ℹ️ logs an info message using [loguru](https://loguru.readthedocs.io/en/stable/)."""
         self._logger.info(message, *args, **kwargs)
 
-    def warning(self, message: str, *args, **kwargs) -> None:
+    def warning(self, message: str, *args, **kwargs) -> None:  # noqa: ANN002
         """❗ logs a warning message using [loguru](https://loguru.readthedocs.io/en/stable/)."""
         self._logger.warning(message, *args, **kwargs)
 
-    def error(self, message: str, *args, **kwargs) -> None:
+    def error(self, message: str, *args, **kwargs) -> None:  # noqa: ANN002
         """🔥 logs n error message using [loguru](https://loguru.readthedocs.io/en/stable/)."""
         self._logger.error(message, *args, **kwargs)
 
-    def critical(self, message: str, *args, **kwargs) -> None:
+    def critical(self, message: str, *args, **kwargs) -> None:  # noqa: ANN002
         """🤯 logs a critical message using [loguru](https://loguru.readthedocs.io/en/stable/)."""
         self._logger.critical(message, *args, **kwargs)
 
-    def success(self, message: str, *args, **kwargs) -> None:
+    def success(self, message: str, *args, **kwargs) -> None:  # noqa: ANN002
         """✅ logs a success message using [loguru](https://loguru.readthedocs.io/en/stable/)."""
         self._logger.success(message, *args, **kwargs)

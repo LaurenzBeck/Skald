@@ -1,32 +1,34 @@
-"""🧑‍💻 terminal user interfaces"""
+"""🧑‍💻 terminal user interfaces."""
+# ruff: noqa: S101, D107, D102, RUF012
 
-from pathlib import Path
+from __future__ import annotations
+
+from pathlib import Path  # noqa: TCH003
 from typing import Optional
 
 import polars as pl
 import typer
-from typing_extensions import Annotated
-from textual.app import App, ComposeResult
-from textual.widgets import (
-    Header,
-    TabbedContent,
-    TabPane,
-    RichLog,
-    Pretty,
-    DirectoryTree,
-    Static,
-)
-from textual_plotext import PlotextPlot
 import yaml
 from aiofile import async_open
-
+from textual.app import App, ComposeResult
 from textual.containers import ScrollableContainer
+from textual.widgets import (
+    DirectoryTree,
+    Header,
+    Pretty,
+    RichLog,
+    Static,
+    TabbedContent,
+    TabPane,
+)
+from textual_plotext import PlotextPlot
+from typing_extensions import Annotated
 
 
 class LogsWidget(RichLog):
     """📃 a widget, that periodically reads `logs_file` and displays the result."""
 
-    def __init__(self, logs_file: Path, update_interval: float | None = None):
+    def __init__(self, logs_file: Path, update_interval: float | None = None) -> None:
         self.logs_file = logs_file
         self.update_interval = update_interval
         super().__init__()
@@ -47,7 +49,7 @@ class LogsWidget(RichLog):
 class MetricsWidget(PlotextPlot):
     """📉 a static widget, that plots a metric using [plottext](https://github.com/Textualize/textual-plotext)."""
 
-    def __init__(self, name: str, values: list[float], ids: list, id: str):
+    def __init__(self, name: str, values: list[float], ids: list, id: str) -> None:
         self.metric_name = name
         self.metric_values = values
         self.metric_ids = ids
@@ -61,7 +63,7 @@ class MetricsWidget(PlotextPlot):
 class StaticMetricsListWidget(Static):
     """🔎📈 a static widget, that reads a `metrics_file` and plots each metric."""
 
-    def __init__(self, metrics_file: Path):
+    def __init__(self, metrics_file: Path) -> None:
         self.metrics_file = metrics_file
         super().__init__()
 
@@ -107,7 +109,7 @@ class StaticMetricsListWidget(Static):
 class ParametersWidget(Pretty):
     """⚙️ a widget, that periodically reads `params_file` and displays the result."""
 
-    def __init__(self, params_file: Path, update_interval: float | None = None):
+    def __init__(self, params_file: Path, update_interval: float | None = None) -> None:
         self.params_file = params_file
         self.update_interval = update_interval
         super().__init__(None)
@@ -116,7 +118,8 @@ class ParametersWidget(Pretty):
         await self.read_params()
         if self.update_interval:
             self.update_timer = self.set_interval(
-                self.update_interval, self.read_params
+                self.update_interval,
+                self.read_params,
             )
 
     async def read_params(self) -> None:
@@ -129,7 +132,11 @@ class ParametersWidget(Pretty):
 class ArtifactsWidget(DirectoryTree):
     """📂 a simple directory tree widget that updates periodically."""
 
-    def __init__(self, artifacts_dir: Path, update_interval: float | None = None):
+    def __init__(
+        self,
+        artifacts_dir: Path,
+        update_interval: float | None = None,
+    ) -> None:
         self.artifacts_dir = artifacts_dir
         self.update_interval = update_interval
         super().__init__(artifacts_dir)
@@ -155,14 +162,18 @@ class ExperimentViewerApp(App):
 
     CSS_PATH = "tui.tcss"
 
-    def __init__(self, experiment_dir: Path, update_interval: float | None = None):
+    def __init__(
+        self,
+        experiment_dir: Path,
+        update_interval: float | None = None,
+    ) -> None:
         """Creates an experiment viewer for a Skáld experiment in `experiment_dir`.
 
         Args:
             experiment_dir (Path): directory containing logs of a Skáld run
             update_interval (float | None, optional): time in seconds to update the widgets
                 by reading the files again. Defaults to None
-        """
+        """  # noqa: E501
         self.experiment_dir = experiment_dir
         self.update_interval = update_interval
         super().__init__()
@@ -173,21 +184,25 @@ class ExperimentViewerApp(App):
         with TabbedContent():
             with TabPane("📃 logs"):
                 yield LogsWidget(
-                    self.experiment_dir / "console.log", self.update_interval
+                    self.experiment_dir / "console.log",
+                    self.update_interval,
                 )
             with TabPane("📈 metrics"):
                 yield StaticMetricsListWidget(
-                    next(self.experiment_dir.glob("metrics.*"))
+                    next(self.experiment_dir.glob("metrics.*")),
                 )
             with TabPane("⚙️ params"):
                 yield ParametersWidget(
-                    self.experiment_dir / "params.yaml", self.update_interval
+                    self.experiment_dir / "params.yaml",
+                    self.update_interval,
                 )
             with TabPane("📂 artifacts"):
                 yield ArtifactsWidget(
-                    self.experiment_dir / "artifacts", self.update_interval
+                    self.experiment_dir / "artifacts",
+                    self.update_interval,
                 )
-        # yield Footer() #* the footer seems buggy in dark mode -> duplicated footers, missing lines and scrolling issues...
+        # * the `Footer` widget by textualize seems buggy in dark mode
+        # * -> duplicated footers, missing lines and scrolling issues...
 
     def action_switch_tab(self, tab: str) -> None:
         """Change the active tab.
@@ -205,19 +220,20 @@ class ExperimentViewerApp(App):
 def view_experiment(
     experiment_dir: Path,
     update_interval: Annotated[Optional[float], typer.Option()] = None,
-):
+) -> None:
     """🔎⚗️ view a Skáld experiment in `experiment_dir` with a [textualize](https://textual.textualize.io/) app.
 
     Args:
         experiment_dir (Path): directory containing logs of a Skáld run
         update_interval (float | None, optional): time in seconds to update the widgets
             by reading the files again. Defaults to None
-    """
+    """  # noqa: E501
     app = ExperimentViewerApp(experiment_dir, update_interval)
     app.run()
 
 
-def main():
+def main() -> None:
+    """🚪 typer entry point."""
     typer.run(view_experiment)
 
 

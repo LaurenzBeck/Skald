@@ -16,7 +16,8 @@ class PersistenceStrategy(str, Enum):
     EAGER = "eager"
     """Persists the metrics and parameters immediately after every `log` call."""
     LAZY = "lazy"
-    """Only persists metrics and parameters when a user calls `save` or the context manager is exited."""
+    """Only persists metrics and parameters when a user calls `save`
+    or the context manager is exited."""
 
 
 PersistenceStrategyLit: TypeAlias = Literal[
