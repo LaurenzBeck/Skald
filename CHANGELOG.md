@@ -8,6 +8,15 @@ This project uses [*towncrier*](https://towncrier.readthedocs.io/) to build the 
 
 <!-- towncrier release notes start -->
 
+## [0.5.0](https://github.com/laurenzbeck/skald/tree/0.5.0) - 2024-07-04
+
+
+### ➕ Added
+
+- 🖼️ added `Logger.log_figure` to log matplotlib figures as artifacts ([#15](https://github.com/laurenzbeck/skald/issues/15))
+- ✨ added convenience `Logger.log` method ([#16](https://github.com/laurenzbeck/skald/issues/16))
+
+
 ## [0.4.0](https://github.com/laurenzbeck/skald/tree/0.4.0) - 2024-06-07
 
 
