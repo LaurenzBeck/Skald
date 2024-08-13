@@ -78,7 +78,7 @@ class StaticMetricsListWidget(Static):
     def get_plots(self) -> list[MetricsWidget]:
         plots = []
         # parse metrics and decide what to plot
-        for (name,), df in self.metrics.groupby(["name"]):
+        for (name,), df in self.metrics.group_by(["name"]):
             # get values
             values = df["value"].to_list()
             # get ids

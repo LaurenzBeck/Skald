@@ -75,7 +75,7 @@ class Logger:
     _metrics: DataFrame
     _params: dict[str, Any]
 
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
         dir: Path = Path(),
         run_name: str | None = None,
