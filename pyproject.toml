@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "skald"
-version = "0.5.1"
+version = "0.5.2"
 description = "📟 a simple and efficient experiment logger for Python 🐍"
 keywords = ["logging", "tui"]
 authors = ["Laurenz Farthofer <laurenz@hey.com>"]
@@ -13,7 +13,7 @@ readme = "README.md"
 skald = "skald.tui:main"
 
 [tool.poe.tasks]
-test = "coverage run --source=skald -m pytest -vv --durations=8"
+test = "coverage run --source=skald -m pytest -vv --durations=8 tests"
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -83,6 +83,9 @@ showcontent = true
 directory = "misc"
 name = "📦 Misc"
 showcontent = true
+
+[tool.ruff]
+exclude = ["examples/perlin_numpy.py"]
 
 [tool.ruff.format]
 quote-style = "double"

@@ -11,12 +11,12 @@
 </p>
 
 <p align="center">
-    <a href="https://pypi.org/project/skald/"><img alt="Static Badge" src="https://img.shields.io/badge/📦_version-0.5.0-blue"></a>
+    <a href="https://pypi.org/project/skald/"><img alt="PyPI - Version" src="https://img.shields.io/pypi/v/skald?label=%F0%9F%93%A6%20PyPi">
     <a href="https://www.repostatus.org/#wip"><img src="https://www.repostatus.org/badges/latest/wip.svg" alt="Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public." /></a>
 </p>
 
 <p align="center">
-    <a href="https://www.python.org/"><img alt="Python" src="https://img.shields.io/badge/Python-3.11-yellow?logo=python"></a>
+    <a href="https://www.python.org/"><img alt="Python" src="https://img.shields.io/badge/Python-3.11|3.12-yellow?logo=python"></a>
     <a href="https://python-poetry.org/"><img alt="Poetry" src="https://img.shields.io/badge/Poetry-1.8.2-blue?logo=Poetry"></a>
 </p>
 

@@ -216,7 +216,7 @@ class Logger:
             value = float(value)
 
         new_entry = DataFrame({"name": name, "value": value} | ids)
-        self._metrics = pl.concat([self._metrics, new_entry], how="diagonal")
+        self._metrics = pl.concat([self._metrics, new_entry], how="diagonal_relaxed")
 
         match self.persistence_strategy:
             case PersistenceStrategy.EAGER:

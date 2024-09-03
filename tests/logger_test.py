@@ -50,12 +50,18 @@ def test_metric_logging(
     """📈 Tests the logging of metrics."""
     logger = skald.Logger(tmp_path, "test", metrics_file_format=metrics_file_format)
 
+    # initialize an metric with id=None to test a previous error with `pl.concat`
+    logger.log_scalar("name", 42, step=None)
+
     for metric in metrics:
         name = metric.pop("name")
         value = metric.pop("value")
         ids = metric
         logger.log_metric(name, value, **ids)
         logger.log_scalar(name, value, **ids)
+
+    # test the behaviour of a log call with a new id
+    logger.log_scalar("name", 42, additional_id="😫")
 
     logger.log_metrics({"loss": 1.23, "accuracy": 0.9}, step=1)
     logger.log_scalars({"loss": 1.23, "accuracy": 0.9}, step=2)
