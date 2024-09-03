@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-    <a href="https://pypi.org/project/skald/"><img alt="PyPI - Version" src="https://img.shields.io/pypi/v/skald?label=%F0%9F%93%A6%20PyPi">
+    <a href="https://pypi.org/project/skald/"><img alt="PyPI - Version" src="https://img.shields.io/pypi/v/skald?label=%F0%9F%93%A6%20PyPi"></a>
     <a href="https://www.repostatus.org/#wip"><img src="https://www.repostatus.org/badges/latest/wip.svg" alt="Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public." /></a>
     <a href="https://github.com/LaurenzBeck/Skald/actions/workflows/python-package.yaml"><img alt="🐍 Python package" src="https://github.com/LaurenzBeck/Skald/actions/workflows/python-package.yaml/badge.svg"></a>
 </p>
