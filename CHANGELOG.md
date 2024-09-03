@@ -8,6 +8,18 @@ This project uses [*towncrier*](https://towncrier.readthedocs.io/) to build the 
 
 <!-- towncrier release notes start -->
 
+## [0.5.2](https://github.com/laurenzbeck/skald/tree/0.5.2) - 2024-09-03
+
+
+### 🐛 Fixed
+
+- 🤷 switched to ´"diagonal_relaxed"´ strategy in ´pl.concat´ when logging metrics ([#21](https://github.com/laurenzbeck/skald/issues/21))
+
+### 📦 Misc
+
+- 🧑‍💻 added CI ([#20](https://github.com/laurenzbeck/skald/issues/20))
+
+
 ## [0.5.0](https://github.com/laurenzbeck/skald/tree/0.5.0) - 2024-07-04
 
 
