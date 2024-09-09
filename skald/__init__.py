@@ -19,6 +19,7 @@ from loguru import logger
 from loguru._logger import Logger as LoguruLogger
 from matplotlib.figure import Figure
 from polars import DataFrame
+from rich.progress import track
 
 from skald import tui
 from skald.enums import (
@@ -27,7 +28,7 @@ from skald.enums import (
     PersistenceStrategy,
     PersistenceStrategyLit,
 )
-from skald.utils import flatten_dict
+from skald.utils import flatten_dict, get_skald_runs
 
 
 @beartype
@@ -440,3 +441,48 @@ class Logger:
     def success(self, message: str, *args, **kwargs) -> None:  # noqa: ANN002
         """✅ logs a success message using [loguru](https://loguru.readthedocs.io/en/stable/)."""
         self._logger.success(message, *args, **kwargs)
+
+
+def combine_runs(
+    directory: Path,
+    include_params: list[str] | None = None,
+) -> pl.DataFrame:
+    """🔎📂 Crawls a `directory` recursively for runs and returns the combined metrics.
+
+    Every parameter in `include_params` will be read from each run (if present) and
+    added to the returned dataframe as additional columns.
+
+    Args:
+        directory (Path): 📂 directory that will be searched recursively for skald runs.
+        include_params (list[str] | None): ⚙️ list of parameters to include in the result
+            for each run. defaults to None.
+
+    Returns:
+        pl.DataFrame: 🐻‍❄️ combined metrics and parameters.
+    """
+    skald_runs = get_skald_runs(directory)
+    num_runs = len(skald_runs)
+    logger.info(f"🔎 found {num_runs} skald runs in {directory}.")
+
+    results = pl.DataFrame()
+
+    for run_dir in track(skald_runs, total=num_runs):
+        # 📈 read metrics
+        metrics_file = next(run_dir.glob("metrics.*"))
+        match metrics_file.suffix:
+            case ".csv":
+                metrics = pl.read_csv(metrics_file)
+            case ".parquet":
+                metrics = pl.read_parquet(metrics_file)
+
+        # ⚙️ read params
+        if include_params:
+            params = yaml.safe_load((run_dir / "params.yaml").read_text())
+
+            for param in include_params:
+                if param in params:
+                    metrics = metrics.with_columns(pl.lit(params[param]).alias(param))
+
+        results = pl.concat([results, metrics], how="diagonal_relaxed")
+
+    return results

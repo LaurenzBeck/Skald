@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "skald"
-version = "0.5.2"
+version = "0.6.0"
 description = "📟 a simple and efficient experiment logger for Python 🐍"
 keywords = ["logging", "tui"]
 authors = ["Laurenz Farthofer <laurenz@hey.com>"]
@@ -10,7 +10,7 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.scripts]
-skald = "skald.tui:main"
+skald = "skald.cli:main"
 
 [tool.poe.tasks]
 test = "coverage run --source=skald -m pytest -vv --durations=8 tests"

@@ -128,17 +128,18 @@ def test_figure_logging(tmp_path: Path) -> None:
     """🖼️ Tests the logging of matplotlib figures."""
     logger = skald.Logger(tmp_path, "test")
 
-    fig = plt.figure()
+    with plt.ioff():
+        fig = plt.figure()
 
-    plt.plot([1, 2, 3])
+        plt.plot([1, 2, 3])
 
-    logger.log_figure("fig_1", fig)
+        logger.log_figure("fig_1", fig)
 
-    assert (logger.artifacts_dir / "fig_1.png").is_file()
+        assert (logger.artifacts_dir / "fig_1.png").is_file()
 
-    logger.log_figure("fig_2")
+        logger.log_figure("fig_2")
 
-    assert (logger.artifacts_dir / "fig_2.png").is_file()
+        assert (logger.artifacts_dir / "fig_2.png").is_file()
 
 
 def test_log(tmp_path: Path, params: dict) -> None:
@@ -172,10 +173,11 @@ def test_log(tmp_path: Path, params: dict) -> None:
     assert len(logger._metrics) == 2
 
     # str, Figure -> `log_figure`
-    fig = plt.figure()
-    plt.plot([1, 2, 3])
-    logger.log("fig_1", fig)
-    assert (logger.artifacts_dir / "fig_1.png").is_file()
+    with plt.ioff():
+        fig = plt.figure()
+        plt.plot([1, 2, 3])
+        logger.log("fig_1", fig)
+        assert (logger.artifacts_dir / "fig_1.png").is_file()
 
     # str -> `info`
     message = "this will be printed"

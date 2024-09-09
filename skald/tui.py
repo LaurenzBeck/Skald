@@ -4,10 +4,8 @@
 from __future__ import annotations
 
 from pathlib import Path  # noqa: TCH003
-from typing import Optional
 
 import polars as pl
-import typer
 import yaml
 from aiofile import async_open
 from textual.app import App, ComposeResult
@@ -22,7 +20,6 @@ from textual.widgets import (
     TabPane,
 )
 from textual_plotext import PlotextPlot
-from typing_extensions import Annotated
 
 
 class LogsWidget(RichLog):
@@ -215,27 +212,3 @@ class ExperimentViewerApp(App):
     def action_toggle_dark(self) -> None:
         """An action to toggle dark mode."""
         self.dark = not self.dark
-
-
-def view_experiment(
-    experiment_dir: Path,
-    update_interval: Annotated[Optional[float], typer.Option()] = None,
-) -> None:
-    """🔎⚗️ view a Skáld experiment in `experiment_dir` with a [textualize](https://textual.textualize.io/) app.
-
-    Args:
-        experiment_dir (Path): directory containing logs of a Skáld run
-        update_interval (float | None, optional): time in seconds to update the widgets
-            by reading the files again. Defaults to None
-    """  # noqa: E501
-    app = ExperimentViewerApp(experiment_dir, update_interval)
-    app.run()
-
-
-def main() -> None:
-    """🚪 typer entry point."""
-    typer.run(view_experiment)
-
-
-if __name__ == "__main__":
-    main()
