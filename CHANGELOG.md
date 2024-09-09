@@ -8,6 +8,18 @@ This project uses [*towncrier*](https://towncrier.readthedocs.io/) to build the 
 
 <!-- towncrier release notes start -->
 
+## [0.6.0](https://github.com/laurenzbeck/skald/tree/0.6.0) - 2024-09-09
+
+
+### ➕ Added
+
+- 📂🔎 added function to combine/crawl multiple skald runs into one dataframe ([#14](https://github.com/laurenzbeck/skald/issues/14))
+
+### ✨ Changed
+
+- 💻 added sub-commands to the skald CLI ([#14](https://github.com/laurenzbeck/skald/issues/14))
+
+
 ## [0.5.2](https://github.com/laurenzbeck/skald/tree/0.5.2) - 2024-09-03
 
 
