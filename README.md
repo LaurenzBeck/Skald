@@ -123,7 +123,7 @@ To launch the experiment viewer TUI after the run is completed, use `tui=True` i
 You can also launch the experiment viewer manually to inspect your logs:
 
 ```sh
-$skald <experiment_run_dir>
+$skald view <experiment_run_dir>
 ```
 
 ---
