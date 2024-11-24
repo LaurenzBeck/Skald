@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "skald"
-version = "0.6.0"
+version = "0.6.1"
 description = "📟 a simple and efficient experiment logger for Python 🐍"
 keywords = ["logging", "tui"]
 authors = ["Laurenz Farthofer <laurenz@hey.com>"]
@@ -39,6 +39,9 @@ pre-commit = "^3.7.0"
 poethepoet = "^0.26.1"
 coverage = "^7.5.0"
 pytest = "^8.2.0"
+jupyter = "^1.1.1"
+seaborn = "^0.13.2"
+toml = "^0.10.2"
 
 [tool.towncrier]
 package = "skald"
