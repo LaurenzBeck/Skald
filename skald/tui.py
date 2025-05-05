@@ -91,14 +91,14 @@ class StaticMetricsListWidget(Static):
             metrics = await f.read()
         match self.metrics_file.suffix:
             case ".csv":
-                self.metrics = pl.read_csv(metrics)
+                self.metrics = pl.read_csv(metrics, raise_if_empty=False)
             case ".parquet":
                 self.metrics = pl.read_parquet(metrics)
 
     def read_metrics(self) -> None:
         match self.metrics_file.suffix:
             case ".csv":
-                self.metrics = pl.read_csv(self.metrics_file)
+                self.metrics = pl.read_csv(self.metrics_file, raise_if_empty=False)
             case ".parquet":
                 self.metrics = pl.read_parquet(self.metrics_file)
 

@@ -1,0 +1,1 @@
+📂 `combine_runs` no longer errors when combining runs from a directory that contains empty runs

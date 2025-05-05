@@ -471,18 +471,25 @@ def combine_runs(
         metrics_file = next(run_dir.glob("metrics.*"))
         match metrics_file.suffix:
             case ".csv":
-                metrics = pl.read_csv(metrics_file)
+                metrics = pl.read_csv(metrics_file, raise_if_empty=False)
             case ".parquet":
                 metrics = pl.read_parquet(metrics_file)
 
-        # ⚙️ read params
-        if include_params:
-            params = yaml.safe_load((run_dir / "params.yaml").read_text())
+        if len(metrics) == 0:
+            logger.warning(
+                f"{run_dir} contained no metrics. Maybe it is still running. This can also happen if you use `PersistenceStrategy.LAZY` and forgot to call `Logger.save()`.",  # noqa: E501
+            )
+        else:
+            # ⚙️ read params
+            if include_params:
+                params = yaml.safe_load((run_dir / "params.yaml").read_text())
 
-            for param in include_params:
-                if param in params:
-                    metrics = metrics.with_columns(pl.lit(params[param]).alias(param))
+                for param in include_params:
+                    if param in params:
+                        metrics = metrics.with_columns(
+                            pl.lit(params[param]).alias(param),
+                        )
 
-        results = pl.concat([results, metrics], how="diagonal_relaxed")
+            results = pl.concat([results, metrics], how="diagonal_relaxed")
 
     return results

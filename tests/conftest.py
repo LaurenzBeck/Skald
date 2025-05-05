@@ -109,6 +109,34 @@ def skald_multirun_dir(
 
 
 @pytest.fixture()
+def skald_multirun_dir_with_empty_and_missing_csv(
+    tmp_path_factory,
+    metrics: list[dict],
+    params: dict,
+) -> Path:
+    """📂 a directory containing a valid skald run, an initialized on with empty metrics and a random directory.
+
+    This situation is common when a run is still running with `PersistenceStrategy.LAZY`
+    """  # noqa: E501
+    run_dir = tmp_path_factory.mktemp("reports")
+    with Logger(run_dir, "1", metrics_file_format="csv") as logger:
+        for metric in metrics:
+            name = metric.pop("name")
+            value = metric.pop("value")
+            ids = metric
+            logger.log_metric(name, value, **ids)
+        logger.log_params(params)
+    _empty_run_parquet = Logger(run_dir, "2", metrics_file_format="parquet")
+    _empty_run_csv = Logger(run_dir, "3", metrics_file_format="csv")
+
+    (run_dir / "1" / "subdirectory").mkdir()
+    with (run_dir / "1" / "a.txt").open("w") as f:
+        f.write("hello there!")
+
+    return run_dir
+
+
+@pytest.fixture()
 def other_dir(tmp_path_factory) -> Path:
     """📂 a directory containing arbitrary files."""
     directory = tmp_path_factory.mktemp("other_dir")

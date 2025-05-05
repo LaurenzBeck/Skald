@@ -34,3 +34,15 @@ def test_combine_runs(skald_multirun_dir):
     assert "learning_rate" in metrics.columns
     assert "train.num_epochs" in metrics.columns
     assert "sizes" not in metrics.columns
+
+
+def test_combine_runs_with_empty_runs(skald_multirun_dir_with_empty_and_missing_csv):
+    """📂 Tests skald.combine_runs."""
+    metrics = combine_runs(
+        skald_multirun_dir_with_empty_and_missing_csv,
+        include_params=["learning_rate", "train.num_epochs", "not_present"],
+    )
+    assert len(metrics) == 4
+    assert "learning_rate" in metrics.columns
+    assert "train.num_epochs" in metrics.columns
+    assert "sizes" not in metrics.columns
