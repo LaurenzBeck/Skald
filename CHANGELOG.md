@@ -8,6 +8,19 @@ This project uses [*towncrier*](https://towncrier.readthedocs.io/) to build the 
 
 <!-- towncrier release notes start -->
 
+## [0.6.2](https://github.com/laurenzbeck/skald/tree/0.6.2) - 2025-05-05
+
+
+### 🐛 Fixed
+
+- 📂 `combine_runs` no longer errors when combining runs from a directory that contains empty csv runs ([#22](https://github.com/laurenzbeck/skald/issues/22))
+
+### 📦 Misc
+
+- ⏱️ added benchmark script ([#19](https://github.com/laurenzbeck/skald/issues/19))
+- ☂️ add coverage badge ([#23](https://github.com/laurenzbeck/skald/issues/23))
+
+
 ## [0.6.0](https://github.com/laurenzbeck/skald/tree/0.6.0) - 2024-09-09
 
 
