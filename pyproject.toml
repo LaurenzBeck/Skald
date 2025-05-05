@@ -13,7 +13,8 @@ readme = "README.md"
 skald = "skald.cli:main"
 
 [tool.poe.tasks]
-test = "coverage run --source=skald -m pytest -vv --durations=8 tests"
+test = "pytest -vv --durations=8 tests"
+test-ci = "pytest --cov --cov-branch --cov-report=xml tests"
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -37,11 +38,11 @@ mkdocs-material = "^9.5.20"
 towncrier = "^23.11.0"
 pre-commit = "^3.7.0"
 poethepoet = "^0.26.1"
-coverage = "^7.5.0"
 pytest = "^8.2.0"
 jupyter = "^1.1.1"
 seaborn = "^0.13.2"
 toml = "^0.10.2"
+pytest-cov = "^6.1.1"
 
 [tool.towncrier]
 package = "skald"

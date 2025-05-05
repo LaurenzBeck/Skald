@@ -30,4 +30,8 @@ jobs:
       - name: ⚡ Lint with ruff
         run: poetry run ruff check skald
       - name: ⚗️ Test with pytest
-        run: poetry run poe test
+        run: poetry run poe test-ci
+      - name: ☂️ Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
