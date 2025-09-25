@@ -5,7 +5,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import beartype
 import matplotlib.pyplot as plt
 import polars as pl
 import pytest
@@ -31,14 +30,6 @@ def test_init_logger(tmp_path: Path):
     assert (tmp_path / "test" / "params.yaml").is_file()
     assert (tmp_path / "test" / "metrics.parquet").is_file()
     assert (tmp_path / "test" / "artifacts").is_dir()
-
-
-def test_metric_logging_exceptions(tmp_path: Path):
-    """🔥 Tests the logging of invalid metrics."""
-    logger = skald.Logger(tmp_path, "test")
-
-    with pytest.raises(beartype.roar.BeartypeCallHintParamViolation):
-        logger.log_metric(1, 42)
 
 
 @pytest.mark.parametrize("metrics_file_format", ["csv", "parquet"])

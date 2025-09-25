@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "skald"
-version = "0.6.2"
+version = "0.6.3"
 description = "📟 a simple and efficient experiment logger for Python 🐍"
 keywords = ["logging", "tui"]
 authors = ["Laurenz Farthofer <laurenz@hey.com>"]
@@ -20,11 +20,10 @@ test-ci = "pytest --cov --cov-branch --cov-report=xml tests"
 python = "^3.11"
 polars = "^1"
 pandas = "^2"
-beartype = "^0.18"
 loguru = "^0.7"
 # 🧑‍💻 UI
-rich = "^13.7"
-typer = "^0.12"
+rich = ">=13.7"
+typer = ">=0.12"
 textual = "^0.76"
 textual-dev = "^1.5"
 textual-plotext = "^0.2"

@@ -26,7 +26,6 @@
 
 <p align="center">
     <a href="https://github.com/astral-sh/ruff"><img alt="Ruff" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json"></a>
-    <a href="https://github.com/beartype/beartype"><img alt="Beartype" src="https://raw.githubusercontent.com/beartype/beartype-assets/main/badge/bear-ified.svg"></a>
 </p>
 
 > Skáld - An Old Norse word for a poet, usually applied to a Norwegian or Icelandic court poet or bard of the period from the 9th century to the 13th. Skaldic verse is marked by its elaborate patterns of metre, rhyme, and alliteration, and by its use of kennings.

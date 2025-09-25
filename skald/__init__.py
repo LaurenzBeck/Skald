@@ -14,7 +14,6 @@ from typing import Any, Self
 import matplotlib.pyplot as plt
 import polars as pl
 import yaml
-from beartype import beartype
 from loguru import logger
 from loguru._logger import Logger as LoguruLogger
 from matplotlib.figure import Figure
@@ -31,7 +30,6 @@ from skald.enums import (
 from skald.utils import flatten_dict, get_skald_runs
 
 
-@beartype
 class Logger:
     """📃 a logger for storing console logs, metrics, parameters and artifacts.
 
