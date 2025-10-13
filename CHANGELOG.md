@@ -8,6 +8,18 @@ This project uses [*towncrier*](https://towncrier.readthedocs.io/) to build the 
 
 <!-- towncrier release notes start -->
 
+## [0.7.0](https://github.com/laurenzbeck/skald/tree/0.7.0) - 2025-10-13
+
+
+### ➕ Added
+
+- 📂 added the option to crawl multiple directories in `combine_runs`.
+
+### 📦 Misc
+
+- 🐛 create parent directories when using a nested directory in the Logger.
+
+
 ## [0.6.2](https://github.com/laurenzbeck/skald/tree/0.6.2) - 2025-05-05
 
 
