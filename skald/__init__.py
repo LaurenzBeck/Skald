@@ -9,7 +9,7 @@ import contextlib
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Self
+from typing import TYPE_CHECKING, Any, Self
 
 import matplotlib.pyplot as plt
 import polars as pl
@@ -28,6 +28,9 @@ from skald.enums import (
     PersistenceStrategyLit,
 )
 from skald.utils import flatten_dict, get_skald_runs
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 class Logger:
@@ -442,7 +445,7 @@ class Logger:
 
 
 def combine_runs(
-    directory: Path,
+    directory: Path | Iterable[Path],
     include_params: list[str] | None = None,
 ) -> pl.DataFrame:
     """🔎📂 Crawls a `directory` recursively for runs and returns the combined metrics.
@@ -451,16 +454,24 @@ def combine_runs(
     added to the returned dataframe as additional columns.
 
     Args:
-        directory (Path): 📂 directory that will be searched recursively for skald runs.
+        directory (Path | Iterable[Path]): 📂 directory will be searched recursively
+            for skald runs. If multiple directories are provided in an iterable
+            (e.g. list or tuple) the function will be called on each and the result
+            will be concatenated.
         include_params (list[str] | None): ⚙️ list of parameters to include in the result
             for each run. defaults to None.
 
     Returns:
         pl.DataFrame: 🐻‍❄️ combined metrics and parameters.
     """
-    skald_runs = get_skald_runs(directory)
-    num_runs = len(skald_runs)
-    logger.info(f"🔎 found {num_runs} skald runs in {directory}.")
+    if isinstance(directory, Path):
+        directory = [directory]
+    skald_runs = []
+    num_runs = 0
+    for d in directory:
+        skald_runs.extend(get_skald_runs(d))
+        num_runs += len(skald_runs)
+        logger.info(f"🔎 found {num_runs} skald runs in {d}.")
 
     results = pl.DataFrame()
 
