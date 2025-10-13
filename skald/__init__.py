@@ -111,7 +111,7 @@ class Logger:
         )
         self.run_dir = dir / self.run_name
 
-        self.run_dir.mkdir()
+        self.run_dir.mkdir(parents=True)
 
         # 📃 console logging with loguru
         # * we also redirect stdout to the log file, which requires a trick from:

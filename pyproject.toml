@@ -104,8 +104,8 @@ ignore = [
     "ANN003",
     "ANN101",
     "ANN401",
-    "TCH002", # beartype needs types at runtime
-    "PYI041", # also needed because beartype is stricter here
+    "TCH002",
+    "PYI041",
     "RUF002",
 ]
 
