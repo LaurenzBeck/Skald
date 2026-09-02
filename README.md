@@ -20,8 +20,8 @@
 </p>
 
 <p align="center">
-    <a href="https://www.python.org/"><img alt="Python" src="https://img.shields.io/badge/Python-3.11|3.12-yellow?logo=python"></a>
-    <a href="https://python-poetry.org/"><img alt="Poetry" src="https://img.shields.io/badge/Poetry-1.8.2-blue?logo=Poetry"></a>
+    <a href="https://www.python.org/"><img alt="Python" src="https://img.shields.io/badge/Python-3.11+-yellow?logo=python"></a>
+    <a href="https://python-poetry.org/"><img alt="Poetry" src="https://img.shields.io/badge/Poetry-2.4.1-blue?logo=Poetry"></a>
 </p>
 
 <p align="center">
