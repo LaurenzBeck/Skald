@@ -8,6 +8,19 @@ This project uses [*towncrier*](https://towncrier.readthedocs.io/) to build the 
 
 <!-- towncrier release notes start -->
 
+## [0.8.0](https://github.com/laurenzbeck/skald/tree/0.8.0) - 2026-09-01
+
+
+### ✨ Changed
+
+- 📈 buffer lazy metrics as Python records and materialize them in Polars only for queries or persistence, avoiding quadratic dataframe concatenation while preserving metric schemas and output; dictionary logging now appends each supplied metric in one batch.
+
+### 📦 Misc
+
+- ⏱️ extend the benchmark report with scalar and dictionary workloads, requested sample counts, and peak-memory measurements; read source package metadata reliably, correct repeated runtime averaging, and replace the unused third-party TOML parser with the process-memory sampler used by the benchmark.
+- 📦 migrate package metadata to PEP 621 so current Poetry can validate the release without deprecation failures; remove package upper bounds to avoid unnecessary resolver conflicts while retaining the Python `<4.0` bound required by `textual-plotext`.
+
+
 ## [0.7.0](https://github.com/laurenzbeck/skald/tree/0.7.0) - 2025-10-13
 
 

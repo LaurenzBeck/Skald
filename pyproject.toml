@@ -1,47 +1,50 @@
-[tool.poetry]
+[project]
 name = "skald"
-version = "0.7.0"
+version = "0.8.0"
 description = "📟 a simple and efficient experiment logger for Python 🐍"
 keywords = ["logging", "tui"]
-authors = ["Laurenz Farthofer <laurenz@hey.com>"]
-repository = "https://github.com/laurenzbeck/skald"
-packages = [{ include = "skald" }]
+authors = [{ name = "Laurenz Farthofer", email = "laurenz@hey.com" }]
 license = "MIT"
 readme = "README.md"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "polars>=1",
+    "pandas>=2",
+    "loguru>=0.7",
+    "rich>=13.7",
+    "typer>=0.12",
+    "textual>=0.76",
+    "textual-dev>=1.5",
+    "textual-plotext>=0.2",
+    "aiofile>=3.8.8",
+    "matplotlib>=3.9",
+]
 
-[tool.poetry.scripts]
+[project.urls]
+Repository = "https://github.com/laurenzbeck/skald"
+
+[project.scripts]
 skald = "skald.cli:main"
+
+[tool.poetry]
+packages = [{ include = "skald" }]
 
 [tool.poe.tasks]
 test = "pytest -vv --durations=8 tests"
 test-ci = "pytest --cov --cov-branch --cov-report=xml tests"
 
-[tool.poetry.dependencies]
-python = "^3.11"
-polars = "^1"
-pandas = "^2"
-loguru = "^0.7"
-# 🧑‍💻 UI
-rich = ">=13.7"
-typer = ">=0.12"
-textual = "^0.76"
-textual-dev = "^1.5"
-textual-plotext = "^0.2"
-aiofile = "^3.8.8"
-matplotlib = "^3.9"
-
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.5"
-mkdocs = "^1.6.0"
-mkdocs-material = "^9.5.20"
-towncrier = "^23.11.0"
-pre-commit = "^3.7.0"
-poethepoet = "^0.26.1"
-pytest = "^8.2.0"
-jupyter = "^1.1.1"
-seaborn = "^0.13.2"
-toml = "^0.10.2"
-pytest-cov = "^6.1.1"
+ruff = ">=0.5"
+mkdocs = ">=1.6.0"
+mkdocs-material = ">=9.5.20"
+towncrier = ">=23.11.0"
+pre-commit = ">=3.7.0"
+poethepoet = ">=0.26.1"
+pytest = ">=8.2.0"
+jupyter = ">=1.1.1"
+seaborn = ">=0.13.2"
+pytest-cov = ">=6.1.1"
+psutil = ">=7.1"
 
 [tool.towncrier]
 package = "skald"
@@ -100,6 +103,7 @@ docstring-code-format = true
 [tool.ruff.lint]
 select = ["ALL"]  # Refer to https://docs.astral.sh/ruff/rules/ and click on the specific rule to understand why it is important
 ignore = [
+    "CPY001",
     "A002",
     "ANN003",
     "ANN101",

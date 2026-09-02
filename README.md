@@ -109,7 +109,7 @@ A basic example:
 from skald import Logger
 
 # get experiment parameters from CLI arguments, parameter files ...
-params: dict = { ... }
+params: dict = {...}
 
 # instanciate a logger with a certain run name
 with Logger("test-run-1") as logger:

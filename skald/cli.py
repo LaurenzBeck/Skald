@@ -1,7 +1,7 @@
 """🧑‍💻 command line interfaces."""
 
 from pathlib import Path
-from typing import Annotated, List, Optional
+from typing import Annotated
 
 import typer
 from loguru import logger
@@ -14,7 +14,7 @@ app = typer.Typer(help="📟 a simple and efficient experiment logger for Python
 @app.command()
 def view(
     experiment_dir: Path,
-    update_interval: Annotated[Optional[float], typer.Option()] = None,
+    update_interval: Annotated[float | None, typer.Option()] = None,
 ) -> None:
     """🔎⚗️ view a Skáld experiment in `experiment_dir` with a [textualize](https://textual.textualize.io/) app.
 
@@ -47,7 +47,7 @@ def combine(
         ),
     ],
     include_params: Annotated[
-        Optional[List[str]],
+        list[str] | None,
         typer.Option(
             "--param",
             "-p",

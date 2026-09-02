@@ -99,6 +99,51 @@ def test_multikey_metric_logging(
     assert metrics.equals(saved_metrics)
 
 
+@pytest.mark.parametrize("metrics_file_format", ["csv", "parquet"])
+def test_buffered_metrics_match_legacy_output(
+    tmp_path: Path,
+    metrics_file_format: MetricsFileFormat,
+) -> None:
+    """👴 Checks if buffered metrics retain legacy ordering, and expanded schemas."""
+    entries = [
+        {"name": "loss", "value": 1.0, "step": 1, "stage": "train"},
+        {"name": "accuracy", "value": 0.9, "step": 1, "stage": "train"},
+        {"name": "loss", "value": 0.5, "step": 2, "worker": 7},
+        {"name": "score", "value": 3.0, "step": "final", "worker": "chief"},
+    ]
+    expected = pl.DataFrame()
+    for entry in entries:
+        expected = pl.concat(
+            [expected, pl.DataFrame(entry)],
+            how="diagonal_relaxed",
+        )
+
+    logger = skald.Logger(
+        tmp_path,
+        "test",
+        metrics_file_format=metrics_file_format,
+        persistence_strategy="lazy",
+    )
+    logger.log_metrics(
+        {"loss": 1, "accuracy": 0.9},
+        step=1,
+        stage="train",
+    )
+    assert len(logger._metrics) == 2
+    logger.log_metric("loss", 0.5, step=2, worker=7)
+    logger.log_metric("score", 3, step="final", worker="chief")
+    logger.save()
+
+    match metrics_file_format:
+        case "csv":
+            saved_metrics = pl.read_csv(logger.metrics_file)
+        case "parquet":
+            saved_metrics = pl.read_parquet(logger.metrics_file)
+
+    assert logger._metrics.equals(expected)
+    assert saved_metrics.equals(expected)
+
+
 def test_params_logging(tmp_path: Path, params: dict) -> None:
     """⚙️ Tests the logging of parameters."""
     logger = skald.Logger(tmp_path, "test")

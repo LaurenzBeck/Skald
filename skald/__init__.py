@@ -74,7 +74,8 @@ class Logger:
 
     # 🔢 Internals
     _logger: LoguruLogger
-    _metrics: DataFrame
+    _metrics_frame: DataFrame
+    _metric_records: list[dict[str, Any]]
     _params: dict[str, Any]
 
     def __init__(
@@ -133,7 +134,7 @@ class Logger:
 
         self._logger.remove()
         self._logger.add(sys.__stdout__)
-        self._logger.add(f"{self.run_dir/'console.log'}")
+        self._logger.add(f"{self.run_dir / 'console.log'}")
         self._redirect_stdout = contextlib.redirect_stdout(
             _StreamToLogger(self._logger),
         )
@@ -151,7 +152,8 @@ class Logger:
         self.params_file = self.run_dir / Path("params.yaml")
         self._save_params()
 
-        self._metrics = DataFrame()
+        self._metrics_frame = DataFrame()
+        self._metric_records = []
         self.metrics_file = self.run_dir / Path("metrics").with_suffix(
             f".{metrics_file_format}",
         )
@@ -204,6 +206,28 @@ class Logger:
 
     # 📈 Metrics
 
+    @property
+    def _metrics(self) -> DataFrame:
+        self._materialize_metrics()
+        return self._metrics_frame
+
+    def _materialize_metrics(self) -> None:
+        if not self._metric_records:
+            return
+
+        buffered_metrics = pl.from_dicts(
+            self._metric_records,
+            infer_schema_length=None,
+        )
+        if self._metrics_frame.is_empty():
+            self._metrics_frame = buffered_metrics
+        else:
+            self._metrics_frame = pl.concat(
+                [self._metrics_frame, buffered_metrics],
+                how="diagonal_relaxed",
+            )
+        self._metric_records.clear()
+
     def log_metric(self, name: str, value: int | float, **ids: dict) -> None:
         """📈 logs a metric with identifiers given as keyword arguments.
 
@@ -217,8 +241,7 @@ class Logger:
         if isinstance(value, int):
             value = float(value)
 
-        new_entry = DataFrame({"name": name, "value": value} | ids)
-        self._metrics = pl.concat([self._metrics, new_entry], how="diagonal_relaxed")
+        self._metric_records.append({"name": name, "value": value} | ids)
 
         match self.persistence_strategy:
             case PersistenceStrategy.EAGER:
@@ -251,8 +274,17 @@ class Logger:
             metrics (dict[str, int | float]): single-level dictionary of metrics.
             **ids: arbitrary keyword arguments used as metric identifier.
         """
-        for name, value in metrics.items():
-            self.log_scalar(name, value, **ids)
+        if not metrics:
+            return
+
+        self._metric_records.extend(
+            {"name": name, "value": float(value), **ids}
+            for name, value in metrics.items()
+        )
+
+        match self.persistence_strategy:
+            case PersistenceStrategy.EAGER:
+                self._save_metrics()
 
     def log_scalars(self, metrics: dict[str, int | float], **ids) -> None:
         """📈 logs a dictionary of scalars with identifiers given as keyword arguments.
@@ -269,8 +301,7 @@ class Logger:
             metrics (dict[str, int | float]): single-level dictionary of metrics.
             **ids: arbitrary keyword arguments used as metric identifier.
         """
-        for name, value in metrics.items():
-            self.log_scalar(name, value, **ids)
+        self.log_metrics(metrics, **ids)
 
     def log_dict(self, metrics: dict[str, int | float], **ids) -> None:
         """📈 logs a dictionary of metrics with identifiers given as keyword arguments.
@@ -287,8 +318,7 @@ class Logger:
             metrics (dict[str, int | float]): single-level dictionary of metrics.
             **ids: arbitrary keyword arguments used as metric identifier.
         """
-        for name, value in metrics.items():
-            self.log_scalar(name, value, **ids)
+        self.log_metrics(metrics, **ids)
 
     # ⚙️ Parameters
 
