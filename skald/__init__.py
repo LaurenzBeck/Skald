@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 import polars as pl
 import yaml
 from loguru import logger
-from loguru._logger import Logger as LoguruLogger
 from matplotlib.figure import Figure
 from polars import DataFrame
 from rich.progress import track
@@ -31,6 +30,8 @@ from skald.utils import flatten_dict, get_skald_runs
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
+    from loguru._logger import Logger as LoguruLogger
 
 
 class Logger:
@@ -110,9 +111,7 @@ class Logger:
                 Defaults to false.
         """  # noqa: E501
         self.timestamp = datetime.now()  # noqa: DTZ005
-        self.run_name = (
-            run_name if run_name else self.timestamp.strftime("%Y%m%d-%H%M%S")
-        )
+        self.run_name = run_name or self.timestamp.strftime("%Y%m%d-%H%M%S")
         self.run_dir = dir / self.run_name
 
         self.run_dir.mkdir(parents=True)

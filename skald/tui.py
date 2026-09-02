@@ -1,9 +1,9 @@
 """🧑‍💻 terminal user interfaces."""
-# ruff: noqa: S101, D107, D102, RUF012
+# ruff: noqa: D107, D102, RUF012
 
 from __future__ import annotations
 
-from pathlib import Path  # noqa: TCH003
+from typing import TYPE_CHECKING
 
 import polars as pl
 import yaml
@@ -20,6 +20,9 @@ from textual.widgets import (
     TabPane,
 )
 from textual_plotext import PlotextPlot
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class LogsWidget(RichLog):

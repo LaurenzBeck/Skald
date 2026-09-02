@@ -6,11 +6,11 @@ In every function that excepts a custom `skald` enum as an argument, use the typ
 good documentation generation.
 """
 
-from enum import Enum
+from enum import StrEnum
 from typing import Literal, TypeAlias
 
 
-class PersistenceStrategy(str, Enum):
+class PersistenceStrategy(StrEnum):
     """💾 strategy which defines when metrics and parameters are persisted in a file."""
 
     EAGER = "eager"
@@ -26,7 +26,7 @@ PersistenceStrategyLit: TypeAlias = Literal[
 ]
 
 
-class MetricsFileFormat(str, Enum):
+class MetricsFileFormat(StrEnum):
     """📄 the file format the metrics will be stored as."""
 
     CSV = "csv"
